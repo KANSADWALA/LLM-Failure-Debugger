@@ -8,7 +8,7 @@ This library goes beyond accuracy metrics to answer:
 > Where did it fail in the reasoning pipeline?
 > What is the most effective fix?**
 
-# 📌 Problem Statement
+## 📌 Problem Statement
 
 Large Language Models (LLMs) exhibit increasingly strong performance across reasoning, generation, and tool-augmented tasks; however, they remain prone to systematic failures such as hallucinations, logical inconsistencies, temporal errors, and tool misuse. Existing evaluation methodologies primarily focus on output correctness, benchmark accuracy, or post-hoc explainability, offering limited insight into why a failure occurred, where it originated in the model’s reasoning pipeline, and how it can be reliably mitigated.
 
