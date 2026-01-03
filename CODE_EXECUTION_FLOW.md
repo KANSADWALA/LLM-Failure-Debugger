@@ -343,12 +343,3 @@ Prompt → Precheck → LLM → Signals → Failure → Root Cause
 ```
 
 ---
-
-If you want next, I can:
-
-* 🔍 Convert this into **sequence diagram**
-* 📘 Write **Methodology section for a research paper**
-* 🧪 Add **example run walkthrough with real output**
-* 🌐 Create **Streamlit UI execution flow**
-
-Just say the word.
