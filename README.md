@@ -8,8 +8,6 @@ This library goes beyond accuracy metrics to answer:
 > Where did it fail in the reasoning pipeline?
 > What is the most effective fix?**
 
----
-
 # 📌 Problem Statement
 
 Large Language Models (LLMs) exhibit increasingly strong performance across reasoning, generation, and tool-augmented tasks; however, they remain prone to systematic failures such as hallucinations, logical inconsistencies, temporal errors, and tool misuse. Existing evaluation methodologies primarily focus on output correctness, benchmark accuracy, or post-hoc explainability, offering limited insight into why a failure occurred, where it originated in the model’s reasoning pipeline, and how it can be reliably mitigated.
@@ -43,16 +41,16 @@ How can we systematically identify, localize, explain, and mitigate internal fai
 
 ```
 ┌──────────────┐
-│   User Prompt│
+│  User Prompt │
 └──────┬───────┘
        ↓
-┌────────────────────┐
-│ Pre-Output Predictor│
-│ (risk estimation)   │
-└──────┬─────────────┘
+┌──────────────────────┐
+│ Pre-Output Predictor │
+│ (risk estimation)    │
+└──────┬───────────────┘
        ↓
 ┌────────────────────┐
-│  LLM Adapter Layer │  ← OpenAI / Anthropic / Ollama / HF / Custom
+│ LLM Adapter Layer  │  ← OpenAI / Anthropic / Ollama / HF / Custom
 └──────┬─────────────┘
        ↓
 ┌────────────────────┐
@@ -63,17 +61,17 @@ How can we systematically identify, localize, explain, and mitigate internal fai
 │ Failure Inference  │  ← weighted causal rules
 └──────┬─────────────┘
        ↓
-┌────────────────────┐
-│ Root Cause Analysis│
-└──────┬─────────────┘
+┌─────────────────────┐
+│ Root Cause Analysis │
+└──────┬──────────────┘
        ↓
 ┌────────────────────┐
 │ Causal Graph Model │  ← learned across runs
 └──────┬─────────────┘
        ↓
-┌────────────────────┐
-│ Prompt Repair Engine│
-└──────┬─────────────┘
+┌──────────────────────┐
+│ Prompt Repair Engine │
+└──────┬───────────────┘
        ↓
 ┌────────────────────┐
 │ Evaluation & Logs  │
@@ -88,6 +86,7 @@ How can we systematically identify, localize, explain, and mitigate internal fai
 llm_failure_debugger/
 │
 ├── adapters/                 # Model integration layer
+│   ├── __init__.py
 │   ├── base.py               # Abstract adapter interface
 │   ├── factory.py            # Adapter factory
 │   ├── openai_adapter.py
@@ -97,148 +96,46 @@ llm_failure_debugger/
 │   └── custom_adapter.py
 │
 ├── core/                     # Core debugging logic
+│   ├── __init__.py
+│   ├── attention_localization.py
+│   ├── causal_model.py       # Structural causal model
 │   ├── debugger.py           # Public API entry point
 │   ├── inference.py          # Failure inference engine
+│   ├── signals.py            # Failure signal extractors
 │   └── precheck.py           # Pre-generation risk prediction
 │
 ├── analysis/                 # Explanation & causality
-│   ├── signals.py            # Failure signal extractors
+│   ├── __init__.py
 │   ├── root_cause.py         # Signal → root cause mapping
-│   ├── attention_localization.py
+│   ├── mechanism.py
 │   ├── causal_graph.py       # Causal graph learning & visualization
-│   ├── causal_model.py       # Structural causal model
 │   └── recommendations.py    # Fix suggestions
 │
 ├── utils/
+│   ├── __init__.py
 │   └── repair.py             # Prompt repair & safety evaluation
 │
 ├── evaluation/
+│   ├── __init__.py
 │   ├── benchmark.py          # Benchmark runner
 │   └── metrics.py            # Precision / Recall / F1
 │
+├── training/
+│   ├── __init__.py
+│   └── intervention.py       # Training intervention planner
+│
 ├── tracking/
+│   ├── __init__.py
 │   ├── tracker.py            # Failure tracking over time
 │   └── active_learning.py    # Sample selection for retraining
 │
-├── training/
-│   └── intervention.py       # Training intervention planner
 │
 ├── type_definitions.py       # Shared enums & dataclasses
 ├── __init__.py               # Public exports
 ├── pyproject.toml            # Packaging & dependencies
+├── CODE_EXECUTION_FLOW.md
 └── README.md
 ```
-
----
-
-## 🔄 Code Execution Flow
-
-### 1. Debugger Initialization
-
-```python
-from llm_failure_debugger import Debugger
-
-debugger = Debugger.from_openai(api_key="sk-...")
-```
-
----
-
-### 2. Prompt Debugging
-
-```python
-result = debugger("Who won the Nobel Prize in Physics in 2026?")
-```
-
-Internally:
-
-1. Pre-output risk prediction
-2. Model generation via adapter
-3. Signal extraction
-4. Failure inference
-5. Root-cause attribution
-6. Causal graph update
-7. Prompt repair (optional)
-8. Failure logging & tracking
-
----
-
-### 3. Failure Output
-
-```python
-if result.has_failures:
-    print(result.recommendations)
-    print(result.repaired_prompt)
-```
-
----
-
-### 4. Causal Graph Visualization
-
-```python
-debugger.visualize_causal_graph()
-debugger.explain_causal_graph()
-```
-
----
-
-### 5. Benchmark Evaluation
-
-```python
-from llm_failure_debugger import BenchmarkRunner
-
-runner = BenchmarkRunner(debugger)
-results = runner.run_from_file("benchmark.json")
-print(results["metrics"])
-```
-
----
-
-## 🧪 Failure Types Detected
-
-* Hallucination
-* Reasoning Breakdown
-* Consistency Error
-* Tool Hallucination / Execution Error
-* Temporal Hallucination
-* Knowledge Contradiction
-* Semantic Drift
-
----
-
-## 🛠 Tech Stack
-
-**Core Language**
-
-* Python 3.10+
-
-**LLM APIs**
-
-* OpenAI API
-* Anthropic Claude
-* Ollama (local)
-* HuggingFace Transformers
-
-**ML / Reasoning**
-
-* Causal inference (SCM-inspired)
-* Rule-based probabilistic inference
-* Entropy-based uncertainty estimation
-* Active learning strategies
-
-**Visualization**
-
-* NetworkX
-* Matplotlib
-
-**Evaluation**
-
-* Precision / Recall / F1
-* Root-cause attribution F1
-
-**Packaging**
-
-* setuptools
-* pyproject.toml
 
 ---
 
@@ -249,17 +146,6 @@ print(results["metrics"])
 * **Safe failure handling via abstention**
 * **Causal reasoning over black-box heuristics**
 * **Library-first, research-ready architecture**
-
----
-
-## 📌 Typical Use Cases
-
-* LLM hallucination debugging
-* Safety & reliability evaluation
-* Research on LLM failure modes
-* Prompt robustness testing
-* Dataset curation & retraining
-* Model comparison across providers
 
 ---
 
